@@ -9,7 +9,8 @@
 ///
 /// @return オブジェクト名が置換されたセレクションリスト
 ///
-global proc string[] sroGetComponentDiffObj(string $objectName, string $selectionList[]){
+global proc string[] sroGetComponentDiffObj(string $objectName, string $selectionList[])
+{
     if(size($selectionList) == 0) error("No Selected.");
 
     int $i = 0;
