@@ -1,3 +1,14 @@
+///
+/// @fn sroGetComponentDiffObj
+/// @brief 別オブジェクトに対して同じコンポーネントを指定する文字列を定義します
+///
+/// セレクションリストに与えられたオブジェクト名を、指定された別オブジェクト名に置換する関数です。
+///
+/// @param objectName 別オブジェクト名
+/// @param selectionList セレクションの文字列配列
+///
+/// @return オブジェクト名が置換されたセレクションリスト
+///
 global proc string[] sroGetComponentDiffObj(string $objectName, string $selectionList[]){
     if(size($selectionList) == 0) error("No Selected.");
 
