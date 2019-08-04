@@ -1,0 +1,14 @@
+global proc string[] sroGetComponentDiffObj(string $objectName, string $selectionList[]){
+    if(size($selectionList) == 0) error("No Selected.");
+
+    int $i = 0;
+    for(; $i < size($selectionList); $i++){
+        string $names[] = stringToStringArray($selectionList[$i], ".");
+        if(size($names) != 2){
+            warning("Parse Error. Selection Name = " + $selectionList[$i]);
+        }
+        string $targetName = $names[size($names) - 1];
+        $selectionList[$i] = $objectName + "." + $targetName;
+    }
+    return $selectionList;
+}
