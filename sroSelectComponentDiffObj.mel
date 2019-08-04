@@ -1,0 +1,15 @@
+///
+/// @fn sroSelectComponentDiffObj(string $objectName)
+///
+/// @brief 現在選択中のコンポーネントを、別のオブジェクトに対して選択します
+///
+/// 内部でsroGetComponentDiffObj()を参照しています。
+///
+/// @param $objectName 対象のオブジェクト名
+///
+global proc sroSelectComponentDiffObj(string $objectName)
+{
+    string $ret[] = sroGetComponentDiffObj($objectName, `ls -sl`);
+    select -cl;
+    select $ret;
+}
