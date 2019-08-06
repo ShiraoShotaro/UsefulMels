@@ -1,0 +1,12 @@
+///
+/// @fn sroBlendshapeWeightAllReset(string $blendshapeName)
+/// @brief ブレンドシェイプのウェイトをすべてリセットします
+/// @param $blendshapeName ブレンドシェイプ名
+///
+global proc sroBlendshapeWeightAllReset(string $blendshapeName){
+    string $list[] = `blendShape -q -t $blendshapeName`;
+    int $i = 0;
+    for(; $i < size($list); $i++){
+        blendShape -e -w $i 0 $blendshapeName;
+    }
+}
