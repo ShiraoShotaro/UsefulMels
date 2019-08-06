@@ -1,0 +1,53 @@
+/// @fn int _isZero(vector $v)
+/// @brief vectorが0かどうか確かめる関数
+/// ベクトルの距離の二乗が閾値0.0001より小さいかで判定
+/// @param $v ベクトル
+/// @retval 1 ベクトルは0である
+/// @retval else ベクトルは0である
+proc int _isZero(vector $v){
+    return ((($v.x) * ($v.x) + ($v.y) * ($v.y) + ($v.z) * ($v.z)) < 0.0001);
+}
+
+///
+/// @fn sroCheckValidJoint()
+/// @brief ジョイントが正しいジョイントとなっているか検査する
+/// 検査したいルートのボーンを選択し、この関数を実行します。
+/// 選択したボーンの全ての子について再帰的に検査を行います。
+///
+/// 適切なボーンとは、直属の親に対して自分が唯一の子である場合、X以外のトランスレート、すべての回転、回転軸の値が0でなければなりません。
+/// また、Xのトランスレートは必ず0以上である必要があります。
+///
+/// 検査結果はログとして出力され、条件を満たさなかったボーンが選択された状態で終了します。
+///
+global proc sroCheckValidJoint(){
+    string $list[] = `ls -sl -dag`;
+    int $i = 0;
+    select -clear;
+    for(; $i < size($list); $i++){
+        string $parent[] = `listRelatives -parent $list[$i]`;
+        if(size($parent) == 0) continue;
+        string $parent_children[] = `listRelatives $parent[0]`;
+        if(size($parent_children) >= 2) continue;
+        
+        vector $trtmp = `getAttr ($list[$i] + ".translate")`;
+        if(($trtmp.x) < -0.0001) {
+            print($list[$i] + " -> Invalid X = "); print($trtmp); print("\n");
+            select -add $list[$i];
+        }
+        vector $tr = <<0, ($trtmp.y), ($trtmp.z)>>;
+        vector $rt = `getAttr ($list[$i] + ".rotate")`;
+        vector $ax = `getAttr ($list[$i] + ".rotateAxis")`;
+        if(!_isZero($tr)){
+            print($list[$i] + " -> translate = "); print($trtmp); print("\n");
+            select -add $list[$i];
+        }
+        if(!_isZero($rt)){
+            print($list[$i] + " -> rotate    = "); print($rt); print("\n");   
+            select -add $list[$i];
+        }
+        if(!_isZero($ax)){
+            print($list[$i] + " -> axis      = "); print($ax); print("\n");   
+            select -add $list[$i];
+        }
+    }
+}
