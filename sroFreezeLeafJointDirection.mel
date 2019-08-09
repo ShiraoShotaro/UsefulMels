@@ -1,0 +1,10 @@
+global proc sroFreezeLeafJointDirection(){
+    string $list[] = `listRelatives -allDescendents`;
+    int $i = 0;
+    for(; $i < size($list); $i++){
+        string $children[] = `listRelatives $list[$i]`;
+        if(size($children) == 0){
+            setAttr ($list[$i] + ".jointOrient") -type float3 0 0 0;
+        }
+    }
+}

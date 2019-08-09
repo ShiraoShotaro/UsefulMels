@@ -1,0 +1,59 @@
+proc _macro(string $objectName, string $objectShapeName){
+    polySeparate -ch 1 $objectShapeName;
+    polySmooth -mth 0 -sdt 2 -ovb 1 -ofb 2 -ofc 0 -ost 1 -ocr 0 -dv 1 -bnr 2 -c 1 -kb 1 -ksb 1 -khe 1 -kt 1 -kmb 1 -suv 1 -peh 0 -sl 1 -dpe 1 -ps 0.1 -ro 1 -ch 1 ($objectName + "|polySurface8");
+    polySmooth -mth 0 -sdt 2 -ovb 1 -ofb 2 -ofc 0 -ost 1 -ocr 0 -dv 1 -bnr 2 -c 1 -kb 1 -ksb 1 -khe 1 -kt 1 -kmb 1 -suv 1 -peh 0 -sl 1 -dpe 1 -ps 0.1 -ro 1 -ch 1 ($objectName + "|polySurface20");
+    polySmooth -mth 0 -sdt 2 -ovb 1 -ofb 2 -ofc 0 -ost 1 -ocr 0 -dv 1 -bnr 2 -c 1 -kb 1 -ksb 1 -khe 1 -kt 1 -kmb 1 -suv 1 -peh 0 -sl 1 -dpe 1 -ps 0.1 -ro 1 -ch 1 ($objectName + "|polySurface17");
+    polySmooth -mth 0 -sdt 2 -ovb 1 -ofb 2 -ofc 0 -ost 1 -ocr 0 -dv 1 -bnr 2 -c 1 -kb 1 -ksb 1 -khe 1 -kt 1 -kmb 1 -suv 1 -peh 0 -sl 1 -dpe 1 -ps 0.1 -ro 1 -ch 1 ($objectName + "|polySurface19");
+    polySmooth -mth 0 -sdt 2 -ovb 1 -ofb 2 -ofc 0 -ost 1 -ocr 0 -dv 1 -bnr 2 -c 1 -kb 1 -ksb 1 -khe 1 -kt 1 -kmb 1 -suv 1 -peh 0 -sl 1 -dpe 1 -ps 0.1 -ro 1 -ch 1 ($objectName + "|polySurface18");
+
+    string $deleteLEdges[] = stringToStringArray("polySurface20.e[100:101] polySurface20.e[104:105] polySurface20.e[108:109] polySurface20.e[112:113] polySurface20.e[116:117] polySurface20.e[120:121] polySurface20.e[124:125] polySurface20.e[128:129] polySurface20.e[132:133] polySurface20.e[136:137] polySurface20.e[140:141] polySurface20.e[144:145] polySurface20.e[148:149] polySurface20.e[152:153] polySurface20.e[156:159] polySurface20.e[256] polySurface20.e[259:260] polySurface20.e[263:264] polySurface20.e[267:268] polySurface20.e[271:272] polySurface20.e[275:276] polySurface20.e[279:280] polySurface20.e[283:284] polySurface20.e[287:288] polySurface20.e[291:292] polySurface20.e[295:296] polySurface20.e[299:300] polySurface20.e[303:304] polySurface20.e[307:308] polySurface20.e[311:312] polySurface20.e[315:316] polySurface20.e[319]", " ");
+    string $deleteREdges[] = stringToStringArray("polySurface17.e[100:101] polySurface17.e[104:105] polySurface17.e[108:109] polySurface17.e[112:113] polySurface17.e[116:117] polySurface17.e[120:121] polySurface17.e[124:125] polySurface17.e[128:129] polySurface17.e[132:133] polySurface17.e[136:137] polySurface17.e[140:141] polySurface17.e[144:145] polySurface17.e[148:149] polySurface17.e[152:153] polySurface17.e[156:159] polySurface17.e[257:258] polySurface17.e[261:262] polySurface17.e[265:266] polySurface17.e[269:270] polySurface17.e[273:274] polySurface17.e[277:278] polySurface17.e[281:282] polySurface17.e[285:286] polySurface17.e[289:290] polySurface17.e[293:294] polySurface17.e[297:298] polySurface17.e[301:302] polySurface17.e[305:306] polySurface17.e[309:310] polySurface17.e[313:314] polySurface17.e[317:318]", " ");
+
+    string $delLEye[] = sroGetComponentDiffObj(($objectName + "|polySurface20"), $deleteLEdges);
+    string $delREye[] = sroGetComponentDiffObj(($objectName + "|polySurface17"), $deleteREdges);
+    polyDelEdge -cv true -ch 1 $delLEye;
+    polyDelEdge -cv true -ch 1 $delREye;
+    
+    // コピー
+    string $dup[] = `duplicate -rr Annoma|ear_geo`;
+    parent -r $dup $objectName;
+    
+    string $pupil_dup[] = `duplicate -rr pupil_geo`;
+    parent -r $pupil_dup $objectName;
+    
+    string $cheek_dup[] = `duplicate -rr cheek_geo`;
+    parent -r $cheek_dup $objectName;
+    
+    string $eye_add[] = `duplicate -rr eye_additional_geo`;
+    parent -r $eye_add $objectName;
+    
+    // 結合
+    string $united[] = `polyUnite -ch 1 -mergeUVSets 1 -centerPivot -name ($objectName + "_united") $objectName`;
+    
+    // ヒストリ削除
+    select $united[0] $objectName;
+    AriSetPivot_Manipulator(3);
+    select $united[0];
+    AriSetPivot_AriReFreezeTranslate_GO(1);
+    DeleteHistory;
+    
+    // リネームと階層戻し
+    string $renamed = `rename $united[0] $objectName`;
+    if($renamed != $objectName) warning("Failed to rename");
+    parent -r $renamed Annoma;    
+}
+
+global proc macroDoIt(){
+    string $list[] = `ls -sl`;
+    int $i = 0;
+    for(; $i < size($list); $i++){
+        string $objs[] = `ls -dag ($list[$i])`;
+        if(size($objs) != 2){
+            warning("Shape node error. Skip : " + $list[$i]);
+        }else{
+            _macro($objs[0], $objs[1]);
+        }    
+    }
+}
+
+

@@ -1,0 +1,26 @@
+global proc sroFreezeRotateAxis(){
+    string $list[] = `ls -sl`;
+    int $i = 0;
+    select -clear;
+    for(; $i < size($list); $i++){
+        string $parent[] = `listRelatives -parent $list[$i]`;
+        if(size($parent) != 1){
+            warning("親がいないか複数存在するためスキップします。 : " + $list[$i]);
+            continue;
+        }
+        
+        string $children[] = `listRelatives $list[$i]`;
+        if(size($children) > 0) parent $children $parent[0];
+        
+        vector $ax = `getAttr ($list[$i] + ".rotateAxis")`;
+        vector $dir = `getAttr ($list[$i] + ".jointOrient")`;
+
+        vector $new = $ax + $dir;
+        
+        //setAttr ($list[$i] + ".jointOrient") -type float3 ($new.x) ($new.y) ($new.z);
+        setAttr ($list[$i] + ".rotateAxis") 0 0 0;
+        
+        if(size($children) > 0) parent $children $list[$i];
+    }
+    select $list;
+}

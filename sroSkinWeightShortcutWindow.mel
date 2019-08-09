@@ -1,0 +1,22 @@
+
+proc __changeWeight(string $fsgName){
+    float $value = `floatSliderGrp -q -v $fsgName`;
+    artSkinSetSelectionValue $value false artAttrSkinPaintCtx artAttrSkin;
+}
+
+proc __changeRadius(string $fsgName){
+    float $value = `floatSliderGrp -q -v $fsgName`;
+    artAttrSkinPaintCtx -e -radius $value `currentCtx`;
+}
+
+global proc sroSkinWeightShortcutWindow(){
+    string $window = `window -title "Skin Weight Tools"`;
+    columnLayout;
+    string $fsgWeight = `floatSliderGrp -label "Weight" -field true -minValue 0.0 -maxValue 1.0 -fieldMinValue 0.0 -fieldMaxValue 1.0 -value 1 -pre 2`;
+    string $fsgRadius = `floatSliderGrp -label "Radius" -field true -minValue 0.1 -maxValue 3.0 -value 1 -pre 2`;
+    
+    floatSliderGrp -e -changeCommand ("__changeWeight(\"" + $fsgWeight + "\")") $fsgWeight;
+    floatSliderGrp -e -dragCommand ("__changeRadius(\"" + $fsgRadius + "\")") $fsgRadius;
+    
+    showWindow $window;
+}

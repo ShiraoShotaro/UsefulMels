@@ -1,0 +1,25 @@
+
+/// @brief 一部の頂点のみのウェイトを転送するプログラム
+/// @duprecate あまりまだ整備していない上にニッチなので
+global proc sroCopyWeightVertexes(string $copyToObjectName, string $copyToCluster, string $copyFromCluster){
+    string $selected[] = `ls -sl -flatten`;
+    int $i = 0;
+    for(; $i < size($selected); $i++){
+        print("progress... " + (string)($i) + "/" + (string)(size($selected)));
+        string $parsed[] = stringToStringArray($selected[$i], ".");
+        if(size($parsed) != 2){
+            warning("skip : " + $selected[$i]);
+            continue;
+        }
+        
+        float $weights[] = `skinPercent -q -v $copyFromCluster $selected[$i]`;
+        string $transforms[] = `skinPercent -q -t $copyFromCluster $selected[$i]`;
+        
+        int $n = 0;
+        for(; $n < size($weights); $n++){
+            string $target_bone_spr[] = stringToStringArray($transforms[$n], ":");
+            skinPercent -nrm false -tv $target_bone_spr[1] $weights[$n] $copyToCluster ($copyToObjectName + "." + $parsed[1]);
+        }
+        // skinPercent -prw 0.0 $copyToCluster ($copyToObjectName + "." + $parsed[1]);
+    }
+}

@@ -1,0 +1,7 @@
+/// @fn sroSelectAllChildren()
+/// @brief 選択した親からたどるすべての子を選択します
+global proc sroSelectAllChildren(){
+    string $list[] = `listRelatives -allDescendents`;
+    print($list);
+    select -add $list;
+}
